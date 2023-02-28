@@ -1,0 +1,37 @@
+import nltk
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+
+# Read in the terms and conditions
+with open("terms_and_conditions.txt", "r") as file:
+    text = file.read()
+
+# Tokenize the text into sentences and words
+sentences = sent_tokenize(text)
+words = word_tokenize(text)
+
+# Remove stop words and punctuation
+stop_words = set(stopwords.words("english"))
+filtered_words = [word for word in words if word.casefold() not in stop_words and word.isalnum()]
+
+# Lemmatize the words
+lemmatizer = WordNetLemmatizer()
+lemmatized_words = [lemmatizer.lemmatize(word) for word in filtered_words]
+
+# Extract key phrases
+key_phrases = []
+for sentence in sentences:
+    for phrase in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(sentence))):
+        if hasattr(phrase, "label") and phrase.label() == "ORGANIZATION":
+            key_phrases.append(" ".join(word for word, tag in phrase.leaves()))
+
+# Print out the key phrases in bulletins
+for phrase in key_phrases:
+    print("* " + phrase)
+
+
+
+This code reads in the terms and conditions from a file named "terms_and_conditions.txt" and tokenizes the text into sentences and words. 
+It then removes stop words and punctuation, lemmatizes the remaining words, and extracts key phrases using the NLTK library's named entity recognition (NER) functionality. 
+Finally, it prints out the key phrases in bulletins.
